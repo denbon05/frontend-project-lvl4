@@ -2,6 +2,7 @@
 
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 const mode = process.env.NODE_ENV || 'development';
 
@@ -9,6 +10,9 @@ module.exports = {
   mode,
   resolve: {
     extensions: ['.js', '.jsx'],
+    alias: {
+      '@': path.resolve(__dirname, 'src/'),
+    },
   },
   output: {
     path: path.join(__dirname, 'dist', 'public'),
@@ -23,6 +27,9 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin(),
+    new CopyPlugin({
+      patterns: [{ from: 'assets/favicon.ico' }],
+    }),
   ],
   module: {
     rules: [
@@ -39,6 +46,11 @@ module.exports = {
           { loader: 'postcss-loader' },
           { loader: 'sass-loader' },
         ],
+      },
+      {
+        test: /\.js$/,
+        enforce: 'pre',
+        use: ['source-map-loader'],
       },
     ],
   },
