@@ -8,12 +8,6 @@ const mode = process.env.NODE_ENV || 'development';
 
 module.exports = {
   mode,
-  resolve: {
-    extensions: ['.js', '.jsx'],
-    alias: {
-      '@': path.resolve(__dirname, 'src/'),
-    },
-  },
   output: {
     path: path.join(__dirname, 'dist', 'public'),
     publicPath: '/assets/',
@@ -51,6 +45,14 @@ module.exports = {
         test: /\.js$/,
         enforce: 'pre',
         use: ['source-map-loader'],
+      },
+      {
+        test: /\.(png|jpe?g|gif)$/i,
+        use: [
+          {
+            loader: 'file-loader',
+          },
+        ],
       },
     ],
   },

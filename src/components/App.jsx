@@ -1,23 +1,71 @@
 import React from 'react';
-import { Switch, Route, Link } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  Redirect,
+} from 'react-router-dom';
+import useAuth, { ProvideAuth } from '../hooks/use-auth.js';
 
-import Home from './Home.jsx';
 import Login from './Login.jsx';
 
 export default function App() {
   return (
-    <>
-      <h1 className="d-flex flex-column">
-        <Link to="/login">Login</Link>
-      </h1>
-      <Switch>
-        <Route exact path="/">
-          <Home />
-        </Route>
-        <Route path="/login">
-          <Login />
-        </Route>
-      </Switch>
-    </>
+    <ProvideAuth>
+      <Router>
+        <div>
+          <ul>
+            <li>
+              <Link to="/public">Public Page</Link>
+            </li>
+            <li>
+              <Link to="/protected">Protected Page</Link>
+            </li>
+          </ul>
+
+          <Switch>
+            <Route path="/public">
+              <PublicPage />
+            </Route>
+            <Route path="/login">
+              <Login />
+            </Route>
+            <PrivateRoute path="/protected">
+              <ProtectedPage />
+            </PrivateRoute>
+          </Switch>
+        </div>
+      </Router>
+    </ProvideAuth>
   );
+}
+
+function PrivateRoute({ children, ...rest }) {
+  const auth = useAuth();
+  return (
+    <Route
+      {...rest}
+      render={({ location }) =>
+        auth.user ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: '/login',
+              state: { from: location },
+            }}
+          />
+        )
+      }
+    />
+  );
+}
+
+function PublicPage() {
+  return <h3>Public</h3>;
+}
+
+function ProtectedPage() {
+  return <h3>Protected</h3>;
 }
